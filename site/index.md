@@ -12,6 +12,7 @@ layout: default
  * [Automatic Discovery with WeaveDNS](weavedns.html)
  * [Working with the Docker CLI and API](proxy.html)
  * [Troubleshooting](troubleshooting.html)
+ * [FAQ](faq.html)
  * [Building](building.html)
  * [How it works](how-it-works.html)
  * [Contact information](https://github.com/weaveworks/weave#contact-us)
