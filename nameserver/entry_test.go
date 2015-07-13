@@ -87,8 +87,8 @@ func TestDelete(t *testing.T) {
 		Entry{Hostname: "B"},
 	}
 
-	es.delete(func(e *Entry) bool {
-		return e.Hostname == "A"
+	es.filter(func(e *Entry) bool {
+		return e.Hostname != "A"
 	})
 	expected := Entries{
 		Entry{Hostname: "B"},

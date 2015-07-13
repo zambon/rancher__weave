@@ -122,16 +122,6 @@ func (es *Entries) merge(incoming Entries) Entries {
 	return newEntries
 }
 
-func (es *Entries) filter(f func(*Entry) bool) {
-	var result Entries
-	for _, e := range *es {
-		if f(&e) {
-			result = append(result, e)
-		}
-	}
-	*es = result
-}
-
 func (es *Entries) tombstone(ourname router.PeerName, f func(*Entry) bool) *Entries {
 	tombstoned := Entries{}
 	for i, e := range *es {
@@ -145,10 +135,10 @@ func (es *Entries) tombstone(ourname router.PeerName, f func(*Entry) bool) *Entr
 	return &tombstoned
 }
 
-func (es *Entries) delete(f func(*Entry) bool) {
+func (es *Entries) filter(f func(*Entry) bool) {
 	i := 0
 	for _, e := range *es {
-		if f(&e) {
+		if !f(&e) {
 			continue
 		}
 		(*es)[i] = e

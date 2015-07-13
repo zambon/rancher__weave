@@ -139,8 +139,8 @@ func (n *Nameserver) ContainerDied(ident string) error {
 func (n *Nameserver) PeerGone(peer *router.Peer) {
 	n.Lock()
 	defer n.Unlock()
-	n.entries.delete(func(e *Entry) bool {
-		return e.Origin == peer.Name
+	n.entries.filter(func(e *Entry) bool {
+		return e.Origin != peer.Name
 	})
 }
 
@@ -172,8 +172,8 @@ func (n *Nameserver) deleteTombstones() {
 	n.Lock()
 	defer n.Unlock()
 	now := time.Now().Unix()
-	n.entries.delete(func(e *Entry) bool {
-		return now-e.Tombstone > int64(tombstoneTimeout/time.Second)
+	n.entries.filter(func(e *Entry) bool {
+		return now-e.Tombstone <= int64(tombstoneTimeout/time.Second)
 	})
 }
 
