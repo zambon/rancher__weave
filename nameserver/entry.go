@@ -182,9 +182,7 @@ func (es *Entries) first(f func(*Entry) bool) (*Entry, error) {
 }
 
 func (es *Entries) Merge(other router.GossipData) {
-	if err := es.merge(*other.(*Entries)); err != nil {
-		panic(err)
-	}
+	es.merge(*other.(*Entries))
 }
 
 func (es *Entries) Encode() [][]byte {
