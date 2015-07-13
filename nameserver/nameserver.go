@@ -40,6 +40,8 @@ type Nameserver struct {
 	entries Entries
 	peers   *router.Peers
 	quit    chan struct{}
+
+	Quarantines QuarantineManager
 }
 
 func New(ourName router.PeerName, peers *router.Peers, docker *docker.Client, domain string) *Nameserver {
@@ -98,6 +100,9 @@ func (n *Nameserver) Lookup(hostname string) []address.Address {
 	result := []address.Address{}
 	for _, e := range entries {
 		if e.Tombstone > 0 {
+			continue
+		}
+		if n.Quarantines.filter(&e) {
 			continue
 		}
 		result = append(result, e.Addr)

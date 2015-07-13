@@ -170,6 +170,8 @@ func main() {
 	ns.Start()
 	defer ns.Stop()
 
+	ns.Quarantines.SetGossip(router.NewGossip("quarantines", &ns.Quarantines))
+
 	dnsserver, err := nameserver.NewDNSServer(ns, dnsDomain, dnsPort,
 		uint32(dnsTTL), dnsClientTimeout)
 	if err != nil {
