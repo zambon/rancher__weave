@@ -110,7 +110,7 @@ func (qm *QuarantineManager) List() Quarantines {
 }
 
 func (qm *QuarantineManager) Add(containerID string, peername router.PeerName, duration time.Duration) (string, error) {
-	Log.Infof("[quarantine] Adding qurantine container=%s, peername=%s, duration=%s",
+	Log.Infof("[quarantine] Adding quarantine container=%s, peername=%s, duration=%s",
 		containerID, peername.String(), duration.String())
 
 	qm.Lock()
@@ -127,7 +127,7 @@ func (qm *QuarantineManager) Delete(ident string) error {
 	qm.Lock()
 	defer qm.Unlock()
 
-	Log.Infof("[quarantine] Deleting qurantine %s", ident)
+	Log.Infof("[quarantine] Deleting quarantine %s", ident)
 
 	i := sort.Search(len(qm.quarantines), func(i int) bool {
 		return qm.quarantines[i].ID >= ident
