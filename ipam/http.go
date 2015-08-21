@@ -1,6 +1,7 @@
 package ipam
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -14,6 +15,15 @@ import (
 func badRequest(w http.ResponseWriter, err error) {
 	http.Error(w, err.Error(), http.StatusBadRequest)
 	common.Log.Warningln("[allocator]:", err.Error())
+}
+
+type mappings struct {
+	Owned []mapping `json:"owned"`
+}
+
+type mapping struct {
+	ContainerID string   `json:"containerid"`
+	Addrs       []string `json:"addrs"`
 }
 
 // HandleHTTP wires up ipams HTTP endpoints to the provided mux.
@@ -57,6 +67,30 @@ func (alloc *Allocator) HandleHTTP(router *mux.Router, defaultSubnet address.CID
 			return
 		}
 		fmt.Fprintf(w, "%s/%d", addr, defaultSubnet.PrefixLen)
+	})
+
+	router.Methods("GET").Path("/ip").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ms := mappings{}
+		done := make(chan struct{})
+		alloc.actionChan <- func() {
+			for containerid, addrs := range alloc.owned {
+				m := mapping{
+					ContainerID: containerid,
+					Addrs:       []string{},
+				}
+				for _, addr := range addrs {
+					m.Addrs = append(m.Addrs, addr.String())
+				}
+				ms.Owned = append(ms.Owned, m)
+			}
+			close(done)
+		}
+		<-done
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(ms); err != nil {
+			common.Log.Warningln("[allocator]:", err.Error())
+		}
 	})
 
 	router.Methods("POST").Path("/ip/{id}/{ip}/{prefixlen}").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
