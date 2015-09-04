@@ -1,5 +1,22 @@
 # FAQ
 
+## Troubleshooting
+
+### My conatiner is not running, and when I do a "docker logs my-container" the
+last line shows a "unable to find interface ethwe" error.
+
+When a container is started via our Docker API proxy (which is the default way we
+recommend to use Weave), we replace the regular entry-point with a small program
+that waits until the Weave network interface is ready, then runs the real
+entry-point.
+
+If this small program finds the Weave interface is not there at all, then it will
+say "Unable to find interface ethwe". This text will be in the logs of your
+container, because our little program is running there, ahead of your real program.
+And if it doesn't find the interface then it will give up and not run the real
+program.
+
+
 ## IP addressing
 
 ### Should I give an IP address to all my containers?
