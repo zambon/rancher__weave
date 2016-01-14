@@ -5,7 +5,7 @@
 weave_local_on() {
     host=$1
     shift 1
-    run_on $host sudo COVERAGE=$COVERAGE weave --local $@
+    run_on $host sudo COVERAGE=$COVERAGE WEAVE_VERSION=$WEAVE_VERSION weave --local $@
 }
 
 start_suite "Run weave with --local"

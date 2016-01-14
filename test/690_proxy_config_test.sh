@@ -5,7 +5,7 @@
 start_suite "Various launch-proxy configurations"
 
 # Booting it over unix socket listens on unix socket
-run_on $HOST1 COVERAGE=$COVERAGE weave launch-proxy
+run_on $HOST1 COVERAGE=$COVERAGE WEAVE_VERSION=$WEAVE_VERSION weave launch-proxy
 assert_raises "run_on $HOST1 sudo docker -H unix:///var/run/weave/weave.sock ps"
 assert_raises "proxy docker_on $HOST1 ps" 1
 weave_on $HOST1 stop-proxy
@@ -29,7 +29,7 @@ assert_raises "run_on $HOST1 sudo docker -H unix:///$socket ps" 0
 weave_on $HOST1 stop-proxy
 
 # Booting it against non-standard docker unix sock
-run_on $HOST1 "DOCKER_HOST=unix:///var/run/alt-docker.sock COVERAGE=$COVERAGE weave launch-proxy -H tcp://0.0.0.0:12375"
+run_on $HOST1 "DOCKER_HOST=unix:///var/run/alt-docker.sock COVERAGE=$COVERAGE WEAVE_VERSION=$WEAVE_VERSION weave launch-proxy -H tcp://0.0.0.0:12375"
 assert_raises "proxy docker_on $HOST1 ps"
 weave_on $HOST1 stop-proxy
 
