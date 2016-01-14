@@ -57,7 +57,7 @@ BUILD_FLAGS=-i -ldflags "-extldflags \"-static\" -X main.version=$(WEAVE_VERSION
 
 PACKAGE_BASE=$(shell go list -e ./)
 
-all: $(WEAVE_EXPORT) $(RUNNER_EXE) $(TEST_TLS_EXE)
+all: $(IMAGES_UPTODATE) $(RUNNER_EXE) $(TEST_TLS_EXE)
 exes: $(EXES)
 
 
@@ -145,9 +145,6 @@ $(WEAVEEXEC_UPTODATE): prog/weaveexec/Dockerfile prog/weaveexec/symlink $(DOCKER
 $(DOCKERPLUGIN_UPTODATE): prog/plugin/Dockerfile $(DOCKERPLUGIN_EXE)
 	$(SUDO) docker build -t $(DOCKERPLUGIN_IMAGE) prog/plugin
 	touch $@
-
-$(WEAVE_EXPORT): $(IMAGES_UPTODATE)
-	$(SUDO) DOCKER_HOST=$(DOCKER_HOST) docker save $(addsuffix :latest,$(IMAGES)) | gzip > $@
 
 $(DOCKER_DISTRIB):
 	curl -o $(DOCKER_DISTRIB) $(DOCKER_DISTRIB_URL)

@@ -11,6 +11,8 @@ if ! [ -z "$SOURCED_CONFIG_SH" ]; then
 fi
 SOURCED_CONFIG_SH=true
 
+export WEAVE_VERSION=${WEAVE_VERSION:-smoketest}
+
 # these ought to match what is in Vagrantfile
 N_MACHINES=${N_MACHINES:-3}
 IP_PREFIX=${IP_PREFIX:-192.168.48}
