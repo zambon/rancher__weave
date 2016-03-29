@@ -423,6 +423,7 @@ delete_iptables_rule() {
 # makes containers react more quickly to a change in the MAC address
 # associated with an IP address.
 configure_arp_cache() {
+    findmnt /proc/sys --options rw >/dev/null 2>&1 || mount --options remount,rw /proc/sys
     $2 sh -c "echo 5 >/proc/sys/net/ipv4/neigh/$1/base_reachable_time &&
               echo 2 >/proc/sys/net/ipv4/neigh/$1/delay_first_probe_time &&
               echo 1 >/proc/sys/net/ipv4/neigh/$1/ucast_solicit"
