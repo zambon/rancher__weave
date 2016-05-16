@@ -23,7 +23,7 @@ func CreateBridge(config *BridgeConfig) (weavenet.BridgeType, error) {
 		bridgeType = weavenet.Bridge
 		if !config.NoFastdp {
 			bridgeType = weavenet.BridgedFastdp
-			if !config.NoBridgedFastdp {
+			if config.NoBridgedFastdp {
 				bridgeType = weavenet.Fastdp
 				config.DatapathName = config.WeaveBridgeName
 			}
