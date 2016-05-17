@@ -45,3 +45,10 @@ func createBridge(args []string) error {
 }
 
 // TODO: destroy-bridge
+
+func enforceAddrAsign(args []string) error {
+	if len(args) != 1 {
+		cmdUsage("enforce-bridge-addr-assign-type", "<bridge-name>")
+	}
+	return common.EnforceAddrAssignType(args[0])
+}

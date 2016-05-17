@@ -139,8 +139,8 @@ func GetBridgeNetDev(bridgeName string) ([]NetDev, error) {
 	})
 }
 
-func EnforceDockerBridgeAddrAssignType(bridgeName string) error {
-	addrAssignType, err := ioutil.ReadFile(fmt.Sprintf("/sys/class/net/%s/addr_assign_type", bridgeName))
+func EnforceAddrAssignType(ifaceName string) error {
+	addrAssignType, err := ioutil.ReadFile(fmt.Sprintf("/sys/class/net/%s/addr_assign_type", ifaceName))
 	if err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ func EnforceDockerBridgeAddrAssignType(bridgeName string) error {
 	// #define NET_ADDR_STOLEN     2   /* address is stolen from other device */
 	// #define NET_ADDR_SET        3   /* address is set using dev_set_mac_address() */
 	if string(addrAssignType) != "3" {
-		link, err := netlink.LinkByName(bridgeName)
+		link, err := netlink.LinkByName(ifaceName)
 		if err != nil {
 			return err
 		}
