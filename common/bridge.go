@@ -99,7 +99,7 @@ func initBridge(config *BridgeConfig) error {
 	if mtu == 0 {
 		mtu = 65535
 	}
-	linkAttrs.MTU = mtu // TODO this probably doesn't work - see weave script
+	linkAttrs.MTU = mtu
 	e.Do(func() { e.Err = netlink.LinkAdd(&netlink.Bridge{LinkAttrs: linkAttrs}) })
 
 	return e.Err
