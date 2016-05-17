@@ -1785,7 +1785,7 @@ really want to do this please set the WEAVE_NO_FASTDP environment variable.
 EOF
             exit 1
         fi
-        create_bridge --without-ethtool
+        create_bridge
         ;;
     attach-bridge)
         if detect_bridge_type ; then
@@ -2036,7 +2036,7 @@ EOF
             [ $# -eq 2 -a "$1" = "-h" ] || usage
             FQDN="$2"
         fi
-        create_bridge --without-ethtool
+        create_bridge
         expose_ip
         expose_nat
         show_addrs $ALL_CIDRS
@@ -2045,7 +2045,7 @@ EOF
         collect_cidr_args "$@"
         shift $CIDR_ARG_COUNT
         ipam_cidrs lookup weave:expose $CIDR_ARGS
-        create_bridge --without-ethtool
+        create_bridge
         for CIDR in $ALL_CIDRS ; do
             if ip addr show dev $BRIDGE | grep -qF $CIDR ; then
                 ip addr del dev $BRIDGE $CIDR
