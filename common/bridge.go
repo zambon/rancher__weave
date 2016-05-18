@@ -127,26 +127,54 @@ func initBridgedFastdp(config *BridgeConfig) error {
 	e.Do(func() { e.Err = initFastdp(config) })
 	e.Do(func() { e.Err = initBridge(config) })
 
+	localName, peerName := "vethwe-bridge", "vethwe-datapath"
+	e.Do(func() {
+		e.Err = CreateVethIfNotExist(localName, peerName, config.MTU, func(veth netlink.Link) error {
+			if err := odp.AddDatapathInterface(config.DatapathName, peerName); err != nil {
+				return err
+			}
+			return AddInterfaceToBridge(veth, config.WeaveBridgeName)
+		})
+	})
+
+	e.Do(func() { e.Err = linkSetUpByName(config.DatapathName) })
+
+	return e.Err
+}
+
+func CreateVethIfNotExist(localName, peerName string, mtu int, init func(netlink.Link) error) error {
+	// If either name exists, bail out
+	if _, err := netlink.LinkByName(localName); err != nil {
+		if _, err := netlink.LinkByName(peerName); err != nil {
+			return nil
+		}
+	}
+
+	var e ErrorHandler
 	link := &netlink.Veth{
 		LinkAttrs: netlink.LinkAttrs{
-			Name: "vethwe-bridge",
-			MTU:  config.MTU},
-		PeerName: "vethwe-datapath",
+			Name: localName,
+			MTU:  mtu},
+		PeerName: peerName,
 	}
 
 	e.Do(func() { e.Err = netlink.LinkAdd(link) })
-	var bridge netlink.Link
-	e.Do(func() { bridge, e.Err = netlink.LinkByName(config.WeaveBridgeName) })
-	e.Do(func() { e.Err = netlink.LinkSetMasterByIndex(link, bridge.Attrs().Index) })
 	e.Do(func() { e.Err = netlink.LinkSetUp(link) })
 	e.Do(func() { e.Err = linkSetUpByName(link.PeerName) })
-	e.Do(func() { e.Err = odp.AddDatapathInterface(config.DatapathName, link.PeerName) })
-	e.Do(func() { e.Err = linkSetUpByName(config.DatapathName) })
+	e.Do(func() { e.Err = init(link) })
 
-	if e.Err != nil {
-		return e.Err
+	if e.Err != nil && link != nil { // Clean up on error
+		netlink.LinkDel(link)
 	}
-	return nil
+	return e.Err
+}
+
+func AddInterfaceToBridge(link netlink.Link, bridgeName string) error {
+	bridge, err := netlink.LinkByName(bridgeName)
+	if err != nil {
+		return err
+	}
+	return netlink.LinkSetMasterByIndex(link, bridge.Attrs().Index)
 }
 
 // Add a rule to iptables, if it doesn't exist already
