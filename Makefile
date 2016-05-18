@@ -128,7 +128,7 @@ $(BUILD_UPTODATE): build/*
 	$(SUDO) docker build -t $(BUILD_IMAGE) build/
 	touch $@
 
-$(WEAVER_UPTODATE): prog/weaver/Dockerfile $(WEAVER_EXE)
+$(WEAVER_UPTODATE): prog/weaver/Dockerfile $(WEAVER_EXE) $(WEAVEEXEC_UPTODATE)
 	$(SUDO) DOCKER_HOST=$(DOCKER_HOST) docker build -t $(WEAVER_IMAGE) prog/weaver
 	touch $@
 
