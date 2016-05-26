@@ -1718,7 +1718,7 @@ plugin_disabled() {
 }
 
 warn_plugin_active() {
-    echo "WARNING: docker may hang in this state; re-launch weave and remove attached containers before shutting down" >&2
+    echo "WARNING: docker network commands may fail in this state, until you re-launch weave" >&2
 }
 
 stop_plugin() {
