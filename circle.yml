@@ -16,6 +16,9 @@ machine:
 dependencies:
   cache_directories:
     - "~/docker"
+    - /home/ubuntu/src/github.com/weaveworks/weave/.pkg
+    - /home/ubuntu/src/github.com/weaveworks/weave/.git/modules/vendor
+    - /home/ubuntu/src/github.com/weaveworks/weave/vendor
   post:
     - sudo apt-get install bc jq
     - curl https://sdk.cloud.google.com | bash
