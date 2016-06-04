@@ -28,6 +28,7 @@ dependencies:
     - cd $SRCDIR/test; ./gce.sh make_template:
         parallel: false
     - "cd $SRCDIR/build; ../tools/rebuild-image weaveworks/weavebuild . Dockerfile build.sh && touch $SRCDIR/.build.uptodate"
+    - cd $SRCDIR; make testrunner
     - cd $SRCDIR; make COVERAGE=true RM= exes all
 
 test:
@@ -35,8 +36,6 @@ test:
     - cd $SRCDIR; make lint:
         parallel: true
     - cd $SRCDIR; COVERDIR=test/coverage make RM= tests:
-        parallel: true
-    - cd $SRCDIR; make testrunner:
         parallel: true
     - cd $SRCDIR/test; ./gce.sh setup && eval $(./gce.sh hosts) && ./setup.sh:
         parallel: true
