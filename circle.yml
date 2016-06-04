@@ -20,8 +20,8 @@ dependencies:
     - /home/ubuntu/src/github.com/weaveworks/weave/.git/modules/vendor
     - /home/ubuntu/src/github.com/weaveworks/weave/vendor
   post:
-    - sudo apt-get install bc jq
-    - curl https://sdk.cloud.google.com | bash
+    - sudo apt-get -q install bc jq
+    - curl https://sdk.cloud.google.com | bash > /dev/null
     - bin/setup-circleci-secrets "$SECRET_PASSWORD"
     - "mkdir -p $SRCDIR && cp -r $(pwd)/ $(dirname $SRCDIR)"
     - "cd $SRCDIR; git submodule update --init"
