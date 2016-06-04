@@ -73,3 +73,6 @@
 [submodule "vendor/github.com/j-keck/arping"]
 	path = vendor/github.com/j-keck/arping
 	url = https://github.com/j-keck/arping
+[submodule "vendor/github.com/mgutz/ansi"]
+	path = vendor/github.com/mgutz/ansi
+	url = https://github.com/mgutz/ansi
