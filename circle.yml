@@ -33,11 +33,12 @@ dependencies:
 
 test:
   override:
+    - cd $SRCDIR/test; ./gce.sh setup && eval $(./gce.sh hosts) && ./setup.sh:
+        parallel: true
+        background: true
     - cd $SRCDIR; make lint:
         parallel: true
     - cd $SRCDIR; COVERDIR=test/coverage make RM= tests:
-        parallel: true
-    - cd $SRCDIR/test; ./gce.sh setup && eval $(./gce.sh hosts) && ./setup.sh:
         parallel: true
     - cd $SRCDIR/test; eval $(./gce.sh hosts); export COVERAGE=true; ./run_all.sh:
         parallel: true
@@ -45,6 +46,7 @@ test:
   post:
     - cd $SRCDIR/test; ./gce.sh destroy:
         parallel: true
+        background: true
     - test "$CIRCLE_NODE_INDEX" != "0" || (cd $SRCDIR/test; ./gen_coverage_reports.sh):
         parallel: true
 
