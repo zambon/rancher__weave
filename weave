@@ -1299,11 +1299,11 @@ ipam_cidrs() {
         allocate)
             METHOD=POST
             CHECK_ALIVE="?check-alive=true"
-            detect_awsvpc
-            if [ -n "$AWSVPC" -a $# -gt 2 ] ; then
-                echo "Error: no IP addresses or subnets may be specified in AWSVPC mode" >&2
-                return 1
-            fi
+            #detect_awsvpc
+            #if [ -n "$AWSVPC" -a $# -gt 2 ] ; then
+            #    echo "Error: no IP addresses or subnets may be specified in AWSVPC mode" >&2
+            #    return 1
+            #fi
             ;;
         allocate_no_check_alive)
             METHOD=POST
