@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/coreos/go-iptables/iptables"
 	"github.com/j-keck/arping"
 	"github.com/vishvananda/netlink"
 
@@ -46,6 +47,11 @@ func setupIface(args []string) error {
 	ifaceName := args[0]
 	newIfName := args[1]
 
+	ipt, err := iptables.New()
+	if err != nil {
+		return err
+	}
+
 	link, err := netlink.LinkByName(ifaceName)
 	if err != nil {
 		return err
@@ -54,6 +60,9 @@ func setupIface(args []string) error {
 		return err
 	}
 	if err := weavenet.ConfigureARPCache(newIfName); err != nil {
+		return err
+	}
+	if err := ipt.Append("filter", "INPUT", "-i", newIfName, "-d", "224.0.0.0/4", "-j", "DROP"); err != nil {
 		return err
 	}
 
