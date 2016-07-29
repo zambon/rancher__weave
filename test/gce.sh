@@ -76,6 +76,7 @@ curl -sSL https://get.docker.com/ | sh
 apt-get update -qq;
 apt-get install -q -y --force-yes --no-install-recommends ethtool;
 usermod -a -G docker vagrant;
+sed -e "s/+)')/+)' | sed 1q)/" -i /etc/init/docker.conf;
 echo 'DOCKER_OPTS="-H unix:///var/run/docker.sock -H unix:///var/run/alt-docker.sock -H tcp://0.0.0.0:2375 -s overlay"' >> /etc/default/docker;
 service docker restart
 EOF
