@@ -11,7 +11,7 @@ set -e
 : ${SSH_KEY_FILE:=$HOME/.ssh/gce_ssh_key}
 : ${PROJECT:=positive-cocoa-90213}
 : ${IMAGE:=ubuntu-14-04}
-: ${TEMPLATE_NAME:=test-template-10}
+: ${TEMPLATE_NAME:=test-template-11}
 : ${ZONE:=us-central1-a}
 : ${NUM_HOSTS:=5}
 SUFFIX=""
