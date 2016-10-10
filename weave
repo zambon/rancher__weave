@@ -8,14 +8,12 @@ IMAGE_VERSION=latest
 [ "$SCRIPT_VERSION" = "(unreleased version)" ] || IMAGE_VERSION=$SCRIPT_VERSION
 IMAGE_VERSION=${WEAVE_VERSION:-$IMAGE_VERSION}
 
-# - Docker versions prior to 1.6 cannot pull images from DockerHub
-# - The weavexec image embeds a Docker 1.6.2 client. Docker will give
-#   a "client is newer than server error" if the daemon has an older
-#   API version, which could be confusing if the user's Docker client
-#   is correctly matched with that older version.
-#
-# We therefore check that the user's Docker *client* is >= 1.6
+# Oldest version we support working with
 MIN_DOCKER_VERSION=1.6.0
+# Get the docker cli to claim to be using the API of Docker 1.6,
+# to avoid "client is newer than server" errors
+DOCKER_API_VERSION=${WEAVE_DOCKER_API_VERSION:-1.18}
+export DOCKER_API_VERSION
 
 # These are needed for remote execs, hence we introduce them here
 DOCKERHUB_USER=${DOCKERHUB_USER:-weaveworks}
@@ -1025,7 +1023,7 @@ create_cni_script() {
 #!/bin/sh
 [ -z "\$CNI_NETNS" -o \$(echo "\$CNI_NETNS" | grep "^/proc/") ] || \\
     EXTRA_VOLUMES="-v \$(dirname \$CNI_NETNS):\$(dirname \$CNI_NETNS)"
-docker run --rm $(docker_run_options) --pid=host -i \\
+DOCKER_API_VERSION=${DOCKER_API_VERSION} docker run --rm $(docker_run_options) --pid=host -i \\
  -e CNI_VERSION -e CNI_COMMAND -e CNI_CONTAINERID -e CNI_NETNS \\
  -e CNI_IFNAME -e CNI_ARGS -e CNI_PATH \\
  -v /etc/cni:/etc/cni -v /opt/cni:/opt/cni \$EXTRA_VOLUMES \\
