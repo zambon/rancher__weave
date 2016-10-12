@@ -25,8 +25,8 @@ func TestBiggestPow2AlignedRange(t *testing.T) {
 	require.Equal(t, NewRange(2, 2), NewRange(1, 3).BiggestCIDRRange())
 	require.Equal(t, NewRange(0, 0x40000000), NewRange(0, 0x7fffffff).BiggestCIDRRange())
 	require.Equal(t, NewRange(0xfffffffe, 1), NewRange(0xfffffffe, 1).BiggestCIDRRange())
-	prop := func(start Address, size Offset) bool {
-		if size > Offset(0xffffffff)-Offset(start) { // out of range
+	prop := func(start Address, size Count) bool {
+		if size > Count(0xffffffff)-Count(start) { // out of range
 			return true
 		}
 		r := NewRange(start, size)
@@ -56,7 +56,7 @@ func cidr(s string) CIDR {
 func TestCIDRs(t *testing.T) {
 	start := ip("10.0.0.1")
 	end := ip("10.0.0.9")
-	r := NewRange(start, Subtract(end, start))
+	r := NewRange(start, Length(end, start))
 	require.Equal(t,
 		[]CIDR{cidr("10.0.0.1/32"), cidr("10.0.0.2/31"), cidr("10.0.0.4/30"), cidr("10.0.0.8/32")},
 		r.CIDRs())

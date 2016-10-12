@@ -16,8 +16,8 @@ type Range struct {
 	Start, End Address // [Start, End); Start <= End
 }
 
-func NewRange(start Address, size Offset) Range {
-	return Range{Start: start, End: Add(start, size)}
+func NewRange(start Address, size Count) Range {
+	return Range{Start: start, End: Add(start, Offset(size))}
 }
 func (r Range) Size() Count                { return Length(r.End, r.Start) }
 func (r Range) String() string             { return fmt.Sprintf("%s-%s", r.Start, r.End-1) }
@@ -48,20 +48,20 @@ func msb(v Count) Count {
 }
 
 func (r Range) BiggestCIDRRange() Range {
-	sizeMsb := Offset(msb(r.Size()))
-	maskedSize := Offset(r.Size()) & (sizeMsb - 1)
-	maskedStart := Offset(r.Start) & (sizeMsb - 1)
+	sizeMsb := msb(r.Size())
+	maskedSize := r.Size() & (sizeMsb - 1)
+	maskedStart := Count(r.Start) & (sizeMsb - 1)
 	if maskedStart == 0 {
 		return NewRange(r.Start, sizeMsb)
 	}
 	if sizeMsb-maskedStart <= maskedSize {
-		return NewRange(Add(r.Start, sizeMsb-maskedStart), sizeMsb)
+		return NewRange(Add(r.Start, Offset(sizeMsb-maskedStart)), sizeMsb)
 	}
 	size := sizeMsb / 2
 	if size >= maskedStart {
-		return NewRange(Add(r.Start, size-maskedStart), size)
+		return NewRange(Add(r.Start, Offset(size-maskedStart)), size)
 	}
-	return NewRange(Add(r.Start, sizeMsb-maskedStart), size)
+	return NewRange(Add(r.Start, Offset(sizeMsb-maskedStart)), size)
 }
 
 func MakeCIDR(subnet CIDR, addr Address) CIDR {
@@ -143,10 +143,10 @@ func (cidr CIDR) End() Address {
 
 func (cidr CIDR) IsSubnet() bool {
 	mask := cidr.Size() - 1
-	return Offset(cidr.Addr)&mask == 0
+	return Count(cidr.Addr)&mask == 0
 }
 
-func (cidr CIDR) Size() Offset { return 1 << uint(32-cidr.PrefixLen) }
+func (cidr CIDR) Size() Count { return 1 << uint(32-cidr.PrefixLen) }
 
 func (cidr CIDR) Range() Range {
 	return NewRange(cidr.Addr, cidr.Size())

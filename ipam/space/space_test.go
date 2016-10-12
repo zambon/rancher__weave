@@ -227,7 +227,7 @@ func TestDonateHard(t *testing.T) {
 	// Fill a fresh space
 	spaceset := makeSpace(start, size)
 	for i := address.Offset(0); i < size; i++ {
-		ok, _ := spaceset.Allocate(address.NewRange(start, size))
+		ok, _ := spaceset.Allocate(address.NewRange(start, address.Count(size)))
 		require.True(t, ok, "Failed to get IP!")
 	}
 
@@ -240,7 +240,7 @@ func TestDonateHard(t *testing.T) {
 	}
 
 	// Now split
-	newRange, ok := spaceset.Donate(address.NewRange(start, size))
+	newRange, ok := spaceset.Donate(address.NewRange(start, address.Count(size)))
 	require.True(t, ok, "GiveUpSpace result")
 	require.Equal(t, address.NewRange(ip("10.0.1.16"), 16), newRange, "Wrong space")
 	require.Equal(t, address.Count(31), spaceset.NumFreeAddresses())
