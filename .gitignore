@@ -45,6 +45,7 @@ prog/weavewait/weavewait_nomcast
 prog/weaveutil/weaveutil
 prog/plugin/Dockerfile
 prog/kube-peers/kube-peers
+prog/weave-kube/kube-peers
 prog/plugin/plugin
 testing/cover/cover
 testing/runner/runner
