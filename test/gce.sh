@@ -100,6 +100,7 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 apt-get update -qq
 apt-get install -q -y kubelet kubeadm kubectl kubernetes-cni
+systemctl --now disable kubelet
 # Pre-pull images required for Kubernetes
 docker pull gcr.io/google_containers/etcd-amd64:2.2.5
 docker pull gcr.io/google_containers/kube-apiserver-amd64:v1.4.0
