@@ -271,9 +271,12 @@ check_restart() {
 start_suite() {
     for host in $HOSTS; do
         [ -z "$DEBUG" ] || echo "Cleaning up on $host: removing all containers and resetting weave"
+        run_on $host "sudo systemctl stop kubelet"
         PLUGIN_FILTER=$(docker_on $host inspect -f 'grep -v {{printf "%.12s" .Id}}' weaveplugin 2>/dev/null) || PLUGIN_FILTER=cat
         rm_containers $host $(docker_on $host ps -aq 2>/dev/null | $PLUGIN_FILTER)
         weave_on $host reset 2>/dev/null
+        run_on $host "sudo find /var/lib/kubelet | xargs -n 1 findmnt -n -t tmpfs -o TARGET -T | uniq | xargs -r sudo umount -v"
+        run_on $host "sudo rm -r -f /etc/kubernetes /var/lib/kubelet /var/lib/etcd"
     done
     whitely echo "$@"
 }
