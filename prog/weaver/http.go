@@ -225,6 +225,7 @@ var ipamTemplate = defTemplate("ipamTemplate", `{{printIPAMRanges .Router .IPAM}
 
 type VersionCheck struct {
 	Enabled     bool
+	Success     bool
 	NewVersion  string
 	NextCheckAt time.Time
 }
@@ -236,6 +237,7 @@ func versionCheck() *VersionCheck {
 	}
 
 	v.Enabled = true
+	v.Success = success.Load().(bool)
 	v.NewVersion = newVersion.Load().(string)
 	v.NextCheckAt = checker.NextCheckAt()
 
@@ -246,12 +248,12 @@ func (v *VersionCheck) String() string {
 	switch {
 	case !v.Enabled:
 		return "version check update disabled"
+	case !v.Success:
+		return fmt.Sprintf("failed to check latest version - see logs; next check at %s", v.NextCheckAt.Format("2006/01/02 15:04:05"))
 	case v.NewVersion != "":
-		return fmt.Sprintf("version %s available - please upgrade!",
-			v.NewVersion)
+		return fmt.Sprintf("version %s available - please upgrade!", v.NewVersion)
 	default:
-		return fmt.Sprintf("up to date; next check at %s",
-			v.NextCheckAt.Format("2006/01/02 15:04:05"))
+		return fmt.Sprintf("up to date; next check at %s", v.NextCheckAt.Format("2006/01/02 15:04:05"))
 	}
 }
 
