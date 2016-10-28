@@ -132,8 +132,11 @@ $(BUILD_UPTODATE): build/*
 	$(SUDO) docker build -t $(BUILD_IMAGE) build/
 	touch $@
 
-$(WEAVER_UPTODATE): prog/weaver/Dockerfile $(WEAVER_EXE) $(WEAVEEXEC_UPTODATE)
-	$(SUDO) DOCKER_HOST=$(DOCKER_HOST) docker build -t $(WEAVER_IMAGE) prog/weaver
+%/Dockerfile.$(DOCKERHUB_USER): %/Dockerfile.template
+	sed -e "s/DOCKERHUB_USER/$(DOCKERHUB_USER)/" $^ > $@
+
+$(WEAVER_UPTODATE): prog/weaver/Dockerfile.$(DOCKERHUB_USER) $(WEAVER_EXE) $(WEAVEEXEC_UPTODATE)
+	$(SUDO) DOCKER_HOST=$(DOCKER_HOST) docker build -f prog/weaver/Dockerfile.$(DOCKERHUB_USER) -t $(WEAVER_IMAGE) prog/weaver
 	touch $@
 
 $(WEAVEEXEC_UPTODATE): prog/weaveexec/Dockerfile prog/weaveexec/symlink $(DOCKER_DISTRIB) weave $(SIGPROXY_EXE) $(WEAVEPROXY_EXE) $(WEAVEWAIT_EXE) $(WEAVEWAIT_NOOP_EXE) $(WEAVEWAIT_NOMCAST_EXE) $(WEAVEUTIL_EXE)
@@ -147,9 +150,6 @@ $(WEAVEEXEC_UPTODATE): prog/weaveexec/Dockerfile prog/weaveexec/symlink $(DOCKER
 	cp $(DOCKER_DISTRIB) prog/weaveexec/docker.tgz
 	$(SUDO) DOCKER_HOST=$(DOCKER_HOST) docker build -t $(WEAVEEXEC_IMAGE) prog/weaveexec
 	touch $@
-
-prog/plugin/Dockerfile.$(DOCKERHUB_USER): prog/plugin/Dockerfile.template
-	sed -e "s/DOCKERHUB_USER/$(DOCKERHUB_USER)/" $^ > $@
 
 $(PLUGIN_UPTODATE): prog/plugin/Dockerfile.$(DOCKERHUB_USER) $(PLUGIN_EXE) $(WEAVER_UPTODATE)
 	$(SUDO) docker build -f prog/plugin/Dockerfile.$(DOCKERHUB_USER) -t $(PLUGIN_IMAGE) prog/plugin
