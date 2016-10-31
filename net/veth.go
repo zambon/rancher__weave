@@ -100,7 +100,7 @@ func contains(addrs []netlink.Addr, addr *net.IPNet) bool {
 	return false
 }
 
-const (
+var (
 	VethName   = "ethwe"        // name inside container namespace
 	vethPrefix = "v" + VethName // starts with "veth" to suppress UI notifications
 )
