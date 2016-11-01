@@ -73,6 +73,38 @@ func EnsureInterfaceAndMcastRoute(ifaceName string) (*net.Interface, error) {
 	return iface, nil
 }
 
+// Wait for an interface to come up and have a default v4 route added.
+func EnsureInterfaceAndDefaultV4Route(ifaceName string) (*net.Interface, error) {
+	iface, err := ensureInterface(ifaceName)
+	if err != nil {
+		return nil, err
+	}
+	ch := make(chan netlink.RouteUpdate)
+	if err := netlink.RouteSubscribe(ch, nil); err != nil {
+		return nil, err
+	}
+	check := func(route netlink.Route) bool {
+		return route.Dst == nil && route.Src == nil && route.Gw != nil
+	}
+	// check for currently-existing route after subscribing, to avoid race
+	routes, err := netlink.RouteList(nil, netlink.FAMILY_V4)
+	if err != nil {
+		return nil, err
+	}
+	for _, route := range routes {
+		if check(route) {
+			return iface, nil
+		}
+	}
+	for update := range ch {
+		if check(update.Route) {
+			return iface, nil
+		}
+	}
+	// should never get here
+	return iface, nil
+}
+
 func findInterface(ifaceName string) (iface *net.Interface, err error) {
 	if iface, err = net.InterfaceByName(ifaceName); err != nil {
 		return iface, fmt.Errorf("Unable to find interface %s", ifaceName)

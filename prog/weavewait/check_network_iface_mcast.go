@@ -7,6 +7,6 @@ import (
 )
 
 func checkNetwork() error {
-	_, err := weavenet.EnsureInterfaceAndMcastRoute(weavenet.VethName)
+	_, err := weavenet.EnsureInterfaceAndDefaultV4Route(weavenet.VethName)
 	return err
 }
