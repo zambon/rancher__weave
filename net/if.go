@@ -54,8 +54,14 @@ func EnsureInterfaceAndMcastRoute(ifaceName string) (*net.Interface, error) {
 	check := func(route netlink.Route) bool {
 		return route.Dst != nil && route.Dst.IP.Equal(dest)
 	}
+
+	link, err := netlink.LinkByName(iface.Name)
+	if err != nil {
+		return nil, err
+	}
+
 	// check for currently-existing route after subscribing, to avoid race
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_V4)
+	routes, err := netlink.RouteList(link, netlink.FAMILY_V4)
 	if err != nil {
 		return nil, err
 	}
@@ -79,15 +85,19 @@ func EnsureInterfaceAndDefaultV4Route(ifaceName string) (*net.Interface, error) 
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(iface)
+	link, err := netlink.LinkByName(iface.Name)
 	ch := make(chan netlink.RouteUpdate)
 	if err := netlink.RouteSubscribe(ch, nil); err != nil {
 		return nil, err
 	}
 	check := func(route netlink.Route) bool {
-		return route.Dst == nil && route.Src == nil && route.Gw != nil
+		b := route.Dst == nil && route.Src == nil && route.Gw != nil
+		fmt.Println(b, route)
+		return b
 	}
 	// check for currently-existing route after subscribing, to avoid race
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_V4)
+	routes, err := netlink.RouteList(link, netlink.FAMILY_V4)
 	if err != nil {
 		return nil, err
 	}
