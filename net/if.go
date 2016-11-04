@@ -85,7 +85,6 @@ func EnsureInterfaceAndDefaultV4Route(ifaceName string) (*net.Interface, error) 
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(iface)
 	link, err := netlink.LinkByName(iface.Name)
 	ch := make(chan netlink.RouteUpdate)
 	if err := netlink.RouteSubscribe(ch, nil); err != nil {
@@ -93,7 +92,6 @@ func EnsureInterfaceAndDefaultV4Route(ifaceName string) (*net.Interface, error) 
 	}
 	check := func(route netlink.Route) bool {
 		b := route.Dst == nil && route.Src == nil && route.Gw != nil
-		fmt.Println(b, route)
 		return b
 	}
 	// check for currently-existing route after subscribing, to avoid race
