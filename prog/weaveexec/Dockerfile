@@ -1,4 +1,4 @@
-FROM alpine
+FROM ppc64le/alpine
 
 MAINTAINER Weaveworks Inc <help@weave.works>
 LABEL works.weave.role=system
