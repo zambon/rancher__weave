@@ -50,7 +50,7 @@ func checkForUpdates(dockerVersion string, network string) {
 	checker = checkpoint.CheckInterval(&params, updateCheckPeriod, handleResponse)
 }
 
-func charsToString(ca []int8) string {
+func charsToString(ca []uint8) string {
 	s := make([]byte, len(ca))
 	i := 0
 	for ; i < len(ca); i++ {
