@@ -1,4 +1,4 @@
-FROM golang:1.5.2
+FROM golang:1.8.2
 ENV GO15VENDOREXPERIMENT 1
 RUN apt-get update && apt-get install -y libpcap-dev python-requests time file
 
