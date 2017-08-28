@@ -34,7 +34,10 @@ WEAVEDB_UPTODATE=.weavedb.uptodate
 
 IMAGES_UPTODATE=$(WEAVER_UPTODATE) $(WEAVEEXEC_UPTODATE) $(PLUGIN_UPTODATE) $(WEAVEDB_UPTODATE)
 
-BUILD_DOCKERFILE_SUFFIX?=
+ARCH ?= $(shell uname -m)
+ifeq ($(ARCH),"x86_64")
+RACE:="-race"
+endif
 
 WEAVER_IMAGE=$(DOCKERHUB_USER)/weave
 WEAVEEXEC_IMAGE=$(DOCKERHUB_USER)/weaveexec
@@ -127,7 +130,7 @@ lint:
 endif
 
 $(BUILD_UPTODATE): build/*
-	$(SUDO) docker build -t $(BUILD_IMAGE) -f build/Dockerfile$(BUILD_DOCKERFILE_SUFFIX) build/
+	$(SUDO) docker build --build-arg RACE=$(RACE) -t $(BUILD_IMAGE) build/
 	touch $@
 
 $(WEAVER_UPTODATE): prog/weaver/Dockerfile $(WEAVER_EXE)
@@ -143,7 +146,7 @@ $(WEAVEEXEC_UPTODATE): prog/weaveexec/Dockerfile prog/weaveexec/symlink $(DOCKER
 	cp $(WEAVEWAIT_NOMCAST_EXE) prog/weaveexec/weavewait_nomcast
 	cp $(WEAVEUTIL_EXE) prog/weaveexec/weaveutil
 	cp $(DOCKER_DISTRIB) prog/weaveexec/docker.tgz
-	$(SUDO) DOCKER_HOST=$(DOCKER_HOST) docker build -t $(WEAVEEXEC_IMAGE) -f prog/weaveexec/Dockerfile$(BUILD_DOCKERFILE_SUFFIX) prog/weaveexec
+	$(SUDO) DOCKER_HOST=$(DOCKER_HOST) docker build -t $(WEAVEEXEC_IMAGE) prog/weaveexec
 	touch $@
 
 $(PLUGIN_UPTODATE): prog/plugin/Dockerfile $(PLUGIN_EXE) $(WEAVEEXEC_UPTODATE)

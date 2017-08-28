@@ -1,6 +1,10 @@
-FROM golang:1.8.2
-ENV GO15VENDOREXPERIMENT 1
-RUN apt-get update && apt-get install -y libpcap-dev python-requests time file
+FROM zambon/golang-multi:1.8.3
+
+ARG RACE
+
+RUN apt-get -q update && \
+    apt-get -qy install libpcap-dev python-requests time file && \
+    rm -rf /var/lib/apt/lists/*
 
 # Get latest versions at the time of the original build (Nov 4, 2016, 6:30 PM EDT)
 # https://github.com/rancher/weave/commit/00a22c8f6697ecd32669b223e7af59ebc2cb1014
@@ -27,6 +31,6 @@ RUN set -x && \
 
 RUN go get github.com/golang/lint/golint github.com/fzipp/gocyclo github.com/client9/misspell/cmd/misspell
 RUN go clean -i net && go install -tags netgo std
-RUN go install -race -tags netgo std
+RUN go install ${RACE} -tags netgo std
 COPY build.sh /
 ENTRYPOINT ["sh", "/build.sh"]
